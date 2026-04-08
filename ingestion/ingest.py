@@ -39,6 +39,13 @@ def disable_socks_proxy():
         log("Disabled SOCKS proxy for arXiv requests")
 
 
+def get_hf_token():
+    token = os.environ.get("HF_TOKEN") or os.environ.get("HUGGINGFACE_HUB_TOKEN")
+    if not token:
+        raise RuntimeError("HF_TOKEN is not set; cannot upload the index to Hugging Face Hub")
+    return token
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--days", type=int, default=7)
@@ -149,11 +156,18 @@ def load_model(checkpoint_name=None):
 
 
 def push_index_to_hub(output_dir):
-    api = HfApi()
+    token = get_hf_token()
+    api = HfApi(token=token)
     for filename in ["recent_embeddings.npy", "recent_metadata.parquet", "last_updated.txt"]:
         path = output_dir / filename
         if path.exists():
-            api.upload_file(path_or_fileobj=str(path), path_in_repo=filename, repo_id=INDEX_REPO, repo_type="dataset")
+            api.upload_file(
+                path_or_fileobj=str(path),
+                path_in_repo=filename,
+                repo_id=INDEX_REPO,
+                repo_type="dataset",
+                token=token,
+            )
     log(f"Pushed index to {INDEX_REPO}")
 
 
