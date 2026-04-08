@@ -74,6 +74,7 @@ def fetch_recent(days, page_size, delay_seconds, max_results_per_category):
 
     for category in TARGET_CATEGORIES:
         collected = 0
+        hit_cap = False
         search = arxiv.Search(
             query=f"cat:{category}",
             max_results=max_results_per_category,
@@ -99,7 +100,14 @@ def fetch_recent(days, page_size, delay_seconds, max_results_per_category):
                     "url": result.entry_id,
                 })
                 collected += 1
+            if collected == max_results_per_category:
+                hit_cap = True
             log(f"Fetched {collected} recent papers for {category}")
+            if hit_cap:
+                log(
+                    f"Reached max_results_per_category={max_results_per_category} for {category}; "
+                    "recent papers may be truncated"
+                )
         except Exception as exc:
             log(f"Skipping {category}: {exc}")
 

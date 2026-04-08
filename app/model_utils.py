@@ -4,8 +4,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from huggingface_hub import hf_hub_download
+from pathlib import Path
 from transformers import AutoModel, AutoTokenizer
 
+BASE_MODEL_NAME = "allenai/specter2_base"
+CHECKPOINT_DIR = Path(__file__).resolve().parent.parent / "training" / "checkpoints"
+LOCAL_BACKBONE = CHECKPOINT_DIR / "backbone"
 MODEL_REPO = "AnanasClassic/arxiv-ml-classifier"
 INDEX_REPO = "AnanasClassic/arxiv-ml-index"
 

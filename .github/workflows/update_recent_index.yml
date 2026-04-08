@@ -31,4 +31,5 @@ jobs:
         run: |
           python ingestion/ingest.py \
             --days 7 \
-            --max-results-per-category 100
+            --page-size 200 \
+            --max-results-per-category 2000
